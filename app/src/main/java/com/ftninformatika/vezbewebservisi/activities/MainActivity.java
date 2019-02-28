@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     Movies movies = response.body();
 
-                    for (Search s : movies.getSearch()) {
+                    for (final Search s : movies.getSearch()) {
                         //s.getTitle();
 
                         Log.i("Search", s.getTitle());
@@ -74,6 +75,20 @@ public class MainActivity extends AppCompatActivity {
                         ListView listView = findViewById(R.id.listViewMain);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listaFilmova);
                         listView.setAdapter(adapter);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                                //   Movies moviesPosition = (Movies) listView.getItemAtPosition(position);
+                                Map<String, String> queryDetail = new HashMap<>();
+                                queryDetail.put("apikey", "72ccd27b");
+                                queryDetail.put("i", s.getImdbID());
+
+                                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                                intent.putExtra("Query", s.getImdbID());
+                                startActivity(intent);
+                            }
+                        });
 
                     }
 
