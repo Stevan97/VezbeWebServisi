@@ -61,4 +61,8 @@ public class Search {
         this.poster = poster;
     }
 
+    public String toString() {
+        return title;
+    }
+
 }

@@ -3,14 +3,13 @@ package com.ftninformatika.vezbewebservisi.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.ftninformatika.vezbewebservisi.R;
 import com.ftninformatika.vezbewebservisi.net.MyService;
@@ -18,7 +17,6 @@ import com.ftninformatika.vezbewebservisi.net.model.Movies;
 import com.ftninformatika.vezbewebservisi.net.model.Search;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +40,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getMovieName(editMovieSearch.getText().toString());
+
             }
         });
 
     }
 
-    private void getMovieName(String text) {
+    private void getMovieName(final String text) {
 
 
         Map<String, String> query = new HashMap<String, String>();
@@ -59,51 +58,58 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Movies> call, Response<Movies> response) {
 
-                List<String> listaFilmova = new ArrayList<>();
-
                 if (response.code() == 200) {
+
                     Movies movies = response.body();
+                    final List<Search> listaFilmova = movies.getSearch();
 
-                    for (final Search s : movies.getSearch()) {
-                        //s.getTitle();
-
-                        Log.i("Search", s.getTitle());
-
-
-                        listaFilmova.add(s.getTitle());
+                    /** Provera kad se ukuca film koji ne postoji (ili se ne ukuca nista) da ne pukne program
+                     * ++ da osvezava listu, da npr ako ukucamo film koji postoji i prikaze listu i
+                     * sledeci put kad ukucamo neki film koji ne postoji da prikaze praznu listu.*/
+                    if (response.body().getSearch() == null) {
 
                         ListView listView = findViewById(R.id.listViewMain);
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listaFilmova);
+                        List<Search> lista = new ArrayList<>();
+                        ArrayAdapter<Search> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, lista);
                         listView.setAdapter(adapter);
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                //   Movies moviesPosition = (Movies) listView.getItemAtPosition(position);
-                                Map<String, String> queryDetail = new HashMap<>();
-                                queryDetail.put("apikey", "72ccd27b");
-                                queryDetail.put("i", s.getImdbID());
-
-                                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                                intent.putExtra("Query", s.getImdbID());
-                                startActivity(intent);
-                            }
-                        });
+                        Toast.makeText(MainActivity.this, "DOEST NOT EXIST", Toast.LENGTH_LONG).show();
+                        return;
 
                     }
 
 
-                }
+                    final ListView listView = findViewById(R.id.listViewMain);
+                    ArrayAdapter<Search> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, listaFilmova);
+                    listView.setAdapter(adapter);
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+
+                            Search s = (Search) listView.getItemAtPosition(position);
+
+                            Map<String, String> queryDetail = new HashMap<>();
+                            queryDetail.put("apikey", "72ccd27b");
+                            queryDetail.put("i", s.getImdbID());
+                            queryDetail.put("plot", "full");
+
+                            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                            intent.putExtra("id", s.getImdbID());
+                            startActivity(intent);
+
+                        }
+                    });
+
+                }
             }
 
 
             @Override
             public void onFailure(Call<Movies> call, Throwable t) {
-
+                Toast.makeText(MainActivity.this, "Nema Filma po tom imenu", Toast.LENGTH_LONG).show();
             }
         });
-
 
     }
 

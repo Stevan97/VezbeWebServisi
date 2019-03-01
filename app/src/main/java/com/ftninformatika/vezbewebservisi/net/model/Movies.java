@@ -1,4 +1,4 @@
-package com.ftninformatika.vezbewebservisi.net.model; ;
+package com.ftninformatika.vezbewebservisi.net.model;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
