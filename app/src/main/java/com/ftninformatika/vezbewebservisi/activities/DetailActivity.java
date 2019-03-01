@@ -50,7 +50,7 @@ public class DetailActivity extends AppCompatActivity {
                     TheRealMovie realMovies = response.body();
 
                     TextView textView = findViewById(R.id.detail_textview);
-                    textView.setText("Naziv Filma" + realMovies.getTitle());
+                    textView.setText("Naziv Filma: " + realMovies.getTitle());
 
                     TextView zanr = findViewById(R.id.detail_zanr);
                     zanr.setText("Zanr: " + realMovies.getGenre());

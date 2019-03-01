@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
+
+
                     final ListView listView = findViewById(R.id.listViewMain);
                     ArrayAdapter<Search> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, listaFilmova);
                     listView.setAdapter(adapter);
@@ -88,11 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                             Search s = (Search) listView.getItemAtPosition(position);
-
-                            Map<String, String> queryDetail = new HashMap<>();
-                            queryDetail.put("apikey", "72ccd27b");
-                            queryDetail.put("i", s.getImdbID());
-                            queryDetail.put("plot", "full");
 
                             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                             intent.putExtra("id", s.getImdbID());
